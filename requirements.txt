@@ -1,0 +1,2 @@
+# Librairie pour l'interface graphique (Qt)
+PyQt5>=5.15.0
