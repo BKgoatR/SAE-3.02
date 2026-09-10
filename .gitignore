@@ -1,4 +1,4 @@
-# Environnements virtuels (indispensable pour ne pas push des milliers de fichiers)
+# Environnements virtuels
 venv/
 env/
 .venv/
@@ -8,10 +8,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Fichiers de configuration des IDE (PyCharm, VS Code)
+# Fichiers de configuration des IDE
 .idea/
-.vscode/
 
 # Fichiers systèmes
 .DS_Store
 Thumbs.db
+
+# Bases de données locales
+*.db
+*.sqlite3
