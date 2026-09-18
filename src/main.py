@@ -7,6 +7,7 @@ from reseau.serveur_feux import ServeurEcoute
 from moteur.physique import MoteurPhysique
 
 
+
 class App(QMainWindow):
     def __init__(self):
         super().__init__()
