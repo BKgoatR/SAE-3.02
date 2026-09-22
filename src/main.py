@@ -17,6 +17,7 @@ class App(QMainWindow):
 
             Vehicule(100, 400, direction="droite", prioritaire=False),
 
+
             Vehicule(350, 100, direction="bas", prioritaire=False)
         ]
 
