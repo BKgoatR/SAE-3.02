@@ -18,17 +18,27 @@ class MoteurPhysique(QThread):
             for v in self.vehicules:
                 v.vitesse_actuelle = v.vitesse_max
 
-                # Logique des feux tricolores (pour les civils)
-                if not v.prioritaire:
-                    # 1. Voitures Nord/Sud regardent le feu NS
-                    if v.direction in ["haut", "bas"] and not self.ui.feu_NS_vert:
-                        if (v.direction == "haut" and 460 < v.y < 500) or \
-                                (v.direction == "bas" and 250 < v.y < 300):
+                # --- Système Anti-collision ---
+                for autre in self.vehicules:
+                    if v != autre and v.direction == autre.direction:
+                        if v.direction == "haut" and 0 < (v.y - autre.y) < 90:
+                            v.vitesse_actuelle = 0
+                        elif v.direction == "bas" and 0 < (autre.y - v.y) < 90:
+                            v.vitesse_actuelle = 0
+                        elif v.direction == "droite" and 0 < (autre.x - v.x) < 90:
+                            v.vitesse_actuelle = 0
+                        elif v.direction == "gauche" and 0 < (v.x - autre.x) < 90:
                             v.vitesse_actuelle = 0
 
-                    # 2. Voitures Est/Ouest regardent le feu EO
-                    elif v.direction in ["gauche", "droite"] and not self.ui.feu_EO_vert:
-                        if (v.direction == "droite" and 250 < v.x < 300):
+                # Logique des feux : S'arrête si le feu n'est pas "vert" (donc rouge OU orange)
+                if not v.prioritaire:
+                    if v.direction in ["haut", "bas"] and self.ui.etat_feu_NS != "vert":
+                        if (v.direction == "haut" and 460 < v.y < 500) or (v.direction == "bas" and 250 < v.y < 300):
+                            v.vitesse_actuelle = 0
+
+                    elif v.direction in ["gauche", "droite"] and self.ui.etat_feu_EO != "vert":
+                        if (v.direction == "droite" and 250 < v.x < 300) or (
+                                v.direction == "gauche" and 460 < v.x < 500):
                             v.vitesse_actuelle = 0
 
                 # L'ambulance envoie le signal à l'approche du feu

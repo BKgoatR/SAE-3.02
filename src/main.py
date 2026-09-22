@@ -1,22 +1,23 @@
 import sys
+import random
 from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtCore import Qt  # <-- AJOUT pour détecter le clavier
 
 from modeles.vehicules import Vehicule
 from ui.zone_dessin import ZoneSimulation
 from reseau.serveur_feux import ServeurEcoute
 from utils.physique import MoteurPhysique
 
+
 class App(QMainWindow):
     def __init__(self):
         super().__init__()
         self.resize(800, 800)
 
+        # 1. On retire l'ambulance de la liste de départ
         self.vehicules = [
             Vehicule(400, 500, direction="haut", prioritaire=False),
-            Vehicule(400, 800, direction="haut", prioritaire=True),  # Ambulance
-
             Vehicule(100, 400, direction="droite", prioritaire=False),
-
             Vehicule(350, 100, direction="bas", prioritaire=False)
         ]
 
@@ -27,11 +28,30 @@ class App(QMainWindow):
         self.serveur.urgence.connect(self.ui.passer_vert)
         self.serveur.start()
 
-        # 2. On passe l'UI au moteur pour qu'il connaisse la couleur du feu
         self.physique = MoteurPhysique(self.vehicules, self.ui)
         self.physique.maj_ui.connect(self.ui.update)
         self.physique.start()
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Space:
+            self.vehicules.append(Vehicule(400, 750, direction="haut", prioritaire=True))
+            print("🚑 Nouvelle ambulance générée au Sud !")
+
+        elif event.key() == Qt.Key_C:
+            # Liste des 3 points de départ possibles (X, Y, direction)
+            # Liste des 4 points de départ possibles
+            voies_possibles = [
+                (400, 750, "haut"),  # Vient du Sud (monte)
+                (350, -50, "bas"),  # Vient du Nord (descend)
+                (-50, 400, "droite"),  # Vient de l'Ouest (va à droite)
+                (800, 350, "gauche")  # <-- AJOUT : Vient de l'Est (va à gauche)
+            ]
+
+            # On choisit une voie au hasard
+            x, y, direction = random.choice(voies_possibles)
+
+            self.vehicules.append(Vehicule(x, y, direction=direction, prioritaire=False))
+            print(f"🚗 Voiture civile générée (Direction : {direction})")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
