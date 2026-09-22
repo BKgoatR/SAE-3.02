@@ -21,30 +21,50 @@ class MoteurPhysique(QThread):
                 # --- Système Anti-collision ---
                 for autre in self.vehicules:
                     if v != autre and v.direction == autre.direction:
-                        if v.direction == "haut" and 0 < (v.y - autre.y) < 90:
+                        if v.direction == "haut" and 0 < (v.y - autre.y) < 100:
                             v.vitesse_actuelle = 0
-                        elif v.direction == "bas" and 0 < (autre.y - v.y) < 90:
+                        elif v.direction == "bas" and 0 < (autre.y - v.y) < 100:
                             v.vitesse_actuelle = 0
-                        elif v.direction == "droite" and 0 < (autre.x - v.x) < 90:
+                        elif v.direction == "droite" and 0 < (autre.x - v.x) < 100:
                             v.vitesse_actuelle = 0
-                        elif v.direction == "gauche" and 0 < (v.x - autre.x) < 90:
+                        elif v.direction == "gauche" and 0 < (v.x - autre.x) < 100:
                             v.vitesse_actuelle = 0
 
-                # Logique des feux : S'arrête si le feu n'est pas "vert" (donc rouge OU orange)
+                # --- Logique des feux basée sur le pare-chocs avant ---
                 if not v.prioritaire:
-                    if v.direction in ["haut", "bas"] and self.ui.etat_feu_NS != "vert":
-                        if (v.direction == "haut" and 460 < v.y < 500) or (v.direction == "bas" and 250 < v.y < 300):
+                    # 1. Voitures Nord / Sud
+                    if v.direction == "haut" and self.ui.etat_feu_NS != "vert":
+                        # Si le nez (v.y) a dépassé 450, il est déjà dans l'intersection -> on trace !
+                        # Sinon, s'il approche entre 450 et 520, on s'arrête.
+                        if 450 <= v.y <= 520:
                             v.vitesse_actuelle = 0
 
-                    elif v.direction in ["gauche", "droite"] and self.ui.etat_feu_EO != "vert":
-                        if (v.direction == "droite" and 250 < v.x < 300) or (
-                                v.direction == "gauche" and 460 < v.x < 500):
+                    elif v.direction == "bas" and self.ui.etat_feu_NS != "vert":
+                        # Le nez pour 'bas' est à l'avant (v.y + 80). Ligne d'effet à 350.
+                        nez_y = v.y + 80
+                        if 280 <= nez_y <= 350:
                             v.vitesse_actuelle = 0
 
-                # L'ambulance envoie le signal à l'approche du feu
-                if v.prioritaire and 550 < v.y < 600 and not v.signal_envoye:
-                    envoyer_urgence()
-                    v.signal_envoye = True
+                    # 2. Voitures Est / Ouest
+                    elif v.direction == "droite" and self.ui.etat_feu_EO != "vert":
+                        # Le nez pour 'droite' est à v.x + 80. Ligne d'effet à 350.
+                        nez_x = v.x + 80
+                        if 280 <= nez_x <= 350:
+                            v.vitesse_actuelle = 0
+
+                    elif v.direction == "gauche" and self.ui.etat_feu_EO != "vert":
+                        # Le nez pour 'gauche' est à v.x. Ligne d'effet à 450.
+                        if 450 <= v.x <= 520:
+                            v.vitesse_actuelle = 0
+
+                # --- Gestion de l'Ambulance ---
+                if v.prioritaire and not v.signal_envoye:
+                    if (v.direction == "haut" and 500 < v.y < 600) or \
+                            (v.direction == "bas" and 200 < v.y < 300) or \
+                            (v.direction == "droite" and 200 < v.x < 300) or \
+                            (v.direction == "gauche" and 500 < v.x < 600):
+                        envoyer_urgence()
+                        v.signal_envoye = True
 
                 v.avancer()
 

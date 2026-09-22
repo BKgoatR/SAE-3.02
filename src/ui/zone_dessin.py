@@ -8,38 +8,31 @@ class ZoneSimulation(QWidget):
         super().__init__()
         self.vehicules = vehicules
 
-        # On utilise des mots pour intégrer l'état "orange"
         self.etat_feu_NS = "rouge"
         self.etat_feu_EO = "vert"
 
         self.timer_feux = QTimer()
         self.timer_feux.timeout.connect(self.gerer_cycle_feux)
-        self.timer_feux.start(5000)  # Commence avec 5 secondes de vert
+        self.timer_feux.start(5000)
 
     def gerer_cycle_feux(self):
-        """Cycle : Vert (5s) -> Orange (2s) -> Rouge"""
         if self.etat_feu_EO == "vert":
             self.etat_feu_EO = "orange"
-            self.timer_feux.start(2000)  # L'orange dure 2 secondes
-
+            self.timer_feux.start(2000)
         elif self.etat_feu_EO == "orange":
             self.etat_feu_EO = "rouge"
             self.etat_feu_NS = "vert"
-            self.timer_feux.start(5000)  # Le vert dure 5 secondes
-
+            self.timer_feux.start(5000)
         elif self.etat_feu_NS == "vert":
             self.etat_feu_NS = "orange"
             self.timer_feux.start(2000)
-
         elif self.etat_feu_NS == "orange":
             self.etat_feu_NS = "rouge"
             self.etat_feu_EO = "vert"
             self.timer_feux.start(5000)
-
         self.update()
 
     def passer_vert(self):
-        """L'ambulance force le feu de sa voie au vert instantanément"""
         self.timer_feux.stop()
         self.etat_feu_NS = "vert"
         self.etat_feu_EO = "rouge"
@@ -47,8 +40,8 @@ class ZoneSimulation(QWidget):
 
     def obtenir_couleur(self, etat):
         if etat == "vert": return QColor(0, 255, 0)
-        if etat == "orange": return QColor(255, 165, 0)  # Code couleur Orange
-        return QColor(255, 0, 0)  # Rouge par défaut
+        if etat == "orange": return QColor(255, 165, 0)
+        return QColor(255, 0, 0)
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -58,14 +51,14 @@ class ZoneSimulation(QWidget):
         p.fillRect(350, 0, 100, 800, QColor(50, 50, 50))
         p.fillRect(0, 350, 800, 100, QColor(50, 50, 50))
 
-        # Dessin des 4 feux avec la nouvelle fonction de couleur
+        # --- Feux rapprochés des coins de l'intersection (350 et 450) ---
         p.setBrush(self.obtenir_couleur(self.etat_feu_NS))
-        p.drawEllipse(310, 220, 30, 30)  # Haut
-        p.drawEllipse(460, 550, 30, 30)  # Bas
+        p.drawEllipse(310, 310, 25, 25)  # Feu Nord (au-dessus du carrefour)
+        p.drawEllipse(465, 465, 25, 25)  # Feu Sud (en dessous du carrefour)
 
         p.setBrush(self.obtenir_couleur(self.etat_feu_EO))
-        p.drawEllipse(220, 460, 30, 30)  # Gauche
-        p.drawEllipse(550, 310, 30, 30)  # Droite
+        p.drawEllipse(465, 310, 25, 25)  # Feu Est (à droite)
+        p.drawEllipse(310, 465, 25, 25)  # Feu Ouest (à gauche)
 
         # Véhicules
         for v in self.vehicules:

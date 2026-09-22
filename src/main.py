@@ -34,25 +34,33 @@ class App(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Space:
-            self.vehicules.append(Vehicule(400, 750, direction="haut", prioritaire=True))
-            print("🚑 Nouvelle ambulance générée au Sud !")
-
-        elif event.key() == Qt.Key_C:
-            # Liste des 3 points de départ possibles (X, Y, direction)
-            # Liste des 4 points de départ possibles
-            voies_possibles = [
+            # Liste des 4 points de départ possibles pour l'ambulance
+            voies_urgences = [
                 (400, 750, "haut"),  # Vient du Sud (monte)
                 (350, -50, "bas"),  # Vient du Nord (descend)
                 (-50, 400, "droite"),  # Vient de l'Ouest (va à droite)
-                (800, 350, "gauche")  # <-- AJOUT : Vient de l'Est (va à gauche)
+                (800, 350, "gauche")  # Vient de l'Est (va à gauche)
             ]
 
             # On choisit une voie au hasard
-            x, y, direction = random.choice(voies_possibles)
+            x, y, direction = random.choice(voies_urgences)
 
+            # On crée l'ambulance avec prioritaire=True
+            self.vehicules.append(Vehicule(x, y, direction=direction, prioritaire=True))
+            print(f"🚑 Ambulance générée en urgence (Direction : {direction}) !")
+
+        elif event.key() == Qt.Key_C:
+            # Liste des 4 points de départ pour les civils
+            voies_civiles = [
+                (400, 750, "haut"),
+                (350, -50, "bas"),
+                (-50, 400, "droite"),
+                (800, 350, "gauche")
+            ]
+
+            x, y, direction = random.choice(voies_civiles)
             self.vehicules.append(Vehicule(x, y, direction=direction, prioritaire=False))
             print(f"🚗 Voiture civile générée (Direction : {direction})")
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     fenetre = App()
