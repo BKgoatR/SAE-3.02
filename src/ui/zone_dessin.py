@@ -32,10 +32,17 @@ class ZoneSimulation(QWidget):
             self.timer_feux.start(5000)
         self.update()
 
-    def passer_vert(self):
+    def passer_vert(self, axe):
+        """L'ambulance force son propre axe au vert et bloque l'autre"""
         self.timer_feux.stop()
-        self.etat_feu_NS = "vert"
-        self.etat_feu_EO = "rouge"
+        if axe == "NS":
+            self.etat_feu_NS = "vert"
+            self.etat_feu_EO = "rouge"
+            print("🚨 Priorité absolue accordée à l'axe Nord / Sud !")
+        else:
+            self.etat_feu_EO = "vert"
+            self.etat_feu_NS = "rouge"
+            print("🚨 Priorité absolue accordée à l'axe Est / Ouest !")
         self.update()
 
     def obtenir_couleur(self, etat):
@@ -67,3 +74,9 @@ class ZoneSimulation(QWidget):
                 p.drawRect(int(v.x), int(v.y), 50, 80)
             else:
                 p.drawRect(int(v.x), int(v.y), 80, 50)
+
+    def reprendre_cycle(self):
+        """Relance le timer des feux depuis le thread principal"""
+        if not self.timer_feux.isActive():
+            self.timer_feux.start(5000)
+            print("🔄 L'ambulance est passée : reprise automatique du cycle normal des feux !")

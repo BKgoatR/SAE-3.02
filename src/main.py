@@ -1,4 +1,5 @@
 import sys
+from reseau.client_vehicule import envoyer_urgence
 import random
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtCore import Qt  # <-- AJOUT pour détecter le clavier
@@ -30,37 +31,40 @@ class App(QMainWindow):
 
         self.physique = MoteurPhysique(self.vehicules, self.ui)
         self.physique.maj_ui.connect(self.ui.update)
+        self.physique.relancer_feux.connect(self.ui.reprendre_cycle)  # 👈 Connexion du signal ici
         self.physique.start()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Space:
-            # Liste des 4 points de départ possibles pour l'ambulance
+            # On définit les 4 issues possibles avec leur axe associé ("NS" ou "EO")
             voies_urgences = [
-                (400, 750, "haut"),  # Vient du Sud (monte)
-                (350, -50, "bas"),  # Vient du Nord (descend)
-                (-50, 400, "droite"),  # Vient de l'Ouest (va à droite)
-                (800, 350, "gauche")  # Vient de l'Est (va à gauche)
+                (400, 750, "haut", "NS"),
+                (350, -50, "bas", "NS"),
+                (-50, 400, "droite", "EO"),
+                (800, 350, "gauche", "EO")
             ]
 
-            # On choisit une voie au hasard
-            x, y, direction = random.choice(voies_urgences)
+            x, y, direction, axe = random.choice(voies_urgences)
 
-            # On crée l'ambulance avec prioritaire=True
+            # Création de l'ambulance
             self.vehicules.append(Vehicule(x, y, direction=direction, prioritaire=True))
-            print(f"🚑 Ambulance générée en urgence (Direction : {direction}) !")
+
+            # 🚨 ON FORCE LE FEU AU VERT INSTANTANÉMENT À L'APPARITION
+            envoyer_urgence(axe)
+            self.ui.passer_vert(axe)
+
+            print(f"🚑 Ambulance générée ({direction}) -> Feu mis au vert immédiatement !")
 
         elif event.key() == Qt.Key_C:
-            # Liste des 4 points de départ pour les civils
             voies_civiles = [
                 (400, 750, "haut"),
                 (350, -50, "bas"),
                 (-50, 400, "droite"),
                 (800, 350, "gauche")
             ]
-
             x, y, direction = random.choice(voies_civiles)
             self.vehicules.append(Vehicule(x, y, direction=direction, prioritaire=False))
-            print(f"🚗 Voiture civile générée (Direction : {direction})")
+            print(f"🚗 Voiture civile générée ({direction})")
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     fenetre = App()
