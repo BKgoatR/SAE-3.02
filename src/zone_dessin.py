@@ -10,9 +10,14 @@ class ZoneDessin(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
 
-        # On récupère la taille de la fenêtre
         largeur = self.width()
         hauteur = self.height()
+        cx = largeur // 2
+        cy = hauteur // 2
+        largeur_route = 200
 
-        # On peint le fond tout en vert
         painter.fillRect(0, 0, largeur, hauteur, QColor(60, 150, 60))
+
+        painter.fillRect(cx - largeur_route // 2, 0, largeur_route, hauteur, Qt.black)
+
+        painter.fillRect(0, cy - largeur_route // 2, largeur, largeur_route, Qt.black)
