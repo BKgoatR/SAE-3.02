@@ -12,7 +12,7 @@ class FenetrePrincipale(QMainWindow):
         self.setWindowTitle("SAE 3.02 - Maquette")
         self.setGeometry(100, 100, 800, 800)
         self.setFixedSize(800, 800)
-        self.setWindowIcon(QIcon('croix.png'))
+        self.setWindowIcon(QIcon('feu1.png'))
 
 
         self.zone_dessin = ZoneDessin()
