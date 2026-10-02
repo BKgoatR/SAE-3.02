@@ -6,7 +6,12 @@ from modeles.vehicules import Vehicule
 class ZoneDessin(QWidget):
     def __init__(self):
         super().__init__()
-        self.liste_vehicules = [Vehicule(430, 700, "haut")]
+        self.liste_vehicules = [
+
+            Vehicule(430, 700, "haut", prioritaire=False),
+            Vehicule(0, 430, "droite", prioritaire=True),
+
+        ]
 
     def paintEvent(self, event):
         painter = QPainter(self)
