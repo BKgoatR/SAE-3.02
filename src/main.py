@@ -43,35 +43,54 @@ class FenetrePrincipale(QMainWindow):
         self.timer.start(50)
 
     def boucle(self):
+        # 1. Gestion des feux
         self.compteur_feux += 1
         if self.compteur_feux >= 100:
             self.compteur_feux = 0
             for f in self.zone_dessin.liste_feux:
                 f.etat = "vert" if f.etat == "rouge" else "rouge"
 
+        # 2. DÉTECTION DES DANGERS (C'est ici qu'on initialise les variables !)
+        alerte_ambulance = False
+        carrefour_occupe = False
+
+        for v in self.zone_dessin.liste_vehicules:
+            # Détection de l'ambulance
+            if v.prioritaire and 200 < v.x < 600 and 200 < v.y < 600:
+                alerte_ambulance = True
+
+            # Détection du carré central (310 à 490)
+            if 310 < v.x < 490 and 310 < v.y < 490:
+                carrefour_occupe = True
+
+        # 3. Mouvement et Arrêts
         for v in self.zone_dessin.liste_vehicules:
             v.vitesse_actuelle = v.vitesse_max
 
             if not v.prioritaire:
                 for f in self.zone_dessin.liste_feux:
-                    if f.etat == "rouge":
-                        if v.direction == "haut" and 500 <= v.y <= 510:
+                    # MAGIE : On s'arrête au rouge, OU si sirène, OU si carrefour encombré
+                    if f.etat == "rouge" or alerte_ambulance or carrefour_occupe:
+
+                        if v.direction == "haut" and f.x == 510 and f.y == 510 and 500 <= v.y <= 510:
                             v.vitesse_actuelle = 0
-                        elif v.direction == "bas" and 210 <= v.y <= 220:
+                        elif v.direction == "bas" and f.x == 270 and f.y == 270 and 210 <= v.y <= 220:
                             v.vitesse_actuelle = 0
-                        elif v.direction == "droite" and 210 <= v.x <= 220:
+                        elif v.direction == "droite" and f.x == 270 and f.y == 510 and 210 <= v.x <= 220:
                             v.vitesse_actuelle = 0
-                        elif v.direction == "gauche" and 500 <= v.x <= 510:
+                        elif v.direction == "gauche" and f.x == 510 and f.y == 270 and 500 <= v.x <= 510:
                             v.vitesse_actuelle = 0
 
             v.avancer()
 
+            # 4. Envoi des logs
             if (v.direction in ["haut", "bas"] and 390 <= v.y <= 410) or (
                     v.direction in ["gauche", "droite"] and 390 <= v.x <= 410):
-                if not v.signal_envoye:
+                if not getattr(v, 'signal_envoye', False):
                     v.signal_envoye = True
                     threading.Thread(target=envoyer_log, args=(self.ip, v)).start()
 
+            # 5. Réapparition
             if v.y < -100:
                 v.y, v.signal_envoye = 800, False
             elif v.y > 900:
