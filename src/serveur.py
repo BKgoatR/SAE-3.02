@@ -1,40 +1,22 @@
 from flask import Flask, request
-from datetime import datetime
-import socket
-import threading
-import time
+import socket, threading, time
 
 app = Flask(__name__)
 
-
-def annoncer_presence():
+def annoncer():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     while True:
-        try:
-            sock.sendto(b"SERVEUR_CARREFOUR", ("255.255.255.255", 5005))
-        except:
-            pass
+        sock.sendto(b"SERVEUR", ("255.255.255.255", 5005))
         time.sleep(2)
 
-
-@app.route('/log_passage', methods=['POST'])
-def log_passage():
+@app.route('/log', methods=['POST'])
+def log():
     data = request.json
-    heure = datetime.now().strftime("%H:%M:%S")
-    ligne = f"[{heure}] Passage d'un(e) {data['type_vehicule']} vers la {data['direction']}.\n"
-
-    print(ligne.strip())
-    with open("logs_carrefour.txt", "a", encoding="utf-8") as f:
-        f.write(ligne)
-
-    return {"statut": "ok"}
-
+    with open("logs.txt", "a") as f:
+        f.write(f"Passage: {data['type']} vers {data['direction']}\n")
+    return {"ok": True}
 
 if __name__ == '__main__':
-    print("=== Démarrage du Serveur du Carrefour ===")
-
-    threading.Thread(target=annoncer_presence, daemon=True).start()
-
-    print("Diffusion de l'IP en cours... En attente des véhicules.")
+    threading.Thread(target=annoncer, daemon=True).start()
     app.run(host='0.0.0.0', port=5000)
