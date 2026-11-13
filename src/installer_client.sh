@@ -5,4 +5,4 @@ unzip -o projet.zip -d projet_carrefour
 cd projet_carrefour
 python3 -m venv .venv
 source .venv/bin/activate
-pip install PyQt5 requests
+pip install PyQt5

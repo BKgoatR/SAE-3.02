@@ -1,4 +1,4 @@
-import sys, socket, requests, threading
+import sys, socket, json, threading
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from zone_dessin import ZoneDessin
@@ -13,8 +13,18 @@ def trouver_serveur():
 
 
 def envoyer_log(ip, v):
-    requests.post(f"http://{ip}:5000/log",
-                  json={"type": "Ambulance" if v.prioritaire else "Voiture", "direction": v.direction})
+    try:
+        # Création du socket TCP
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        sock.connect((ip, 5000))
+
+        # Envoi des données
+        donnees = {"type": "Ambulance" if v.prioritaire else "Voiture", "direction": v.direction}
+        sock.send(json.dumps(donnees).encode('utf-8'))
+        sock.close()
+    except:
+        pass
 
 
 class FenetrePrincipale(QMainWindow):
@@ -26,21 +36,19 @@ class FenetrePrincipale(QMainWindow):
         self.zone_dessin = ZoneDessin()
         self.setCentralWidget(self.zone_dessin)
 
-        self.compteur_feux = 0  # Compteur pour le timer des feux
+        self.compteur_feux = 0
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.boucle)
         self.timer.start(50)
 
     def boucle(self):
-        # 1. Gestion des feux (changement toutes les 100 boucles = 5 secondes)
         self.compteur_feux += 1
         if self.compteur_feux >= 100:
             self.compteur_feux = 0
             for f in self.zone_dessin.liste_feux:
                 f.etat = "vert" if f.etat == "rouge" else "rouge"
 
-        # 2. Gestion des véhicules
         for v in self.zone_dessin.liste_vehicules:
             v.vitesse_actuelle = v.vitesse_max
 
@@ -49,25 +57,29 @@ class FenetrePrincipale(QMainWindow):
                     if f.etat == "rouge":
                         if v.direction == "haut" and 500 <= v.y <= 510:
                             v.vitesse_actuelle = 0
+                        elif v.direction == "bas" and 210 <= v.y <= 220:
+                            v.vitesse_actuelle = 0
                         elif v.direction == "droite" and 210 <= v.x <= 220:
+                            v.vitesse_actuelle = 0
+                        elif v.direction == "gauche" and 500 <= v.x <= 510:
                             v.vitesse_actuelle = 0
 
             v.avancer()
 
-            # Envoi des logs au milieu
             if (v.direction in ["haut", "bas"] and 390 <= v.y <= 410) or (
                     v.direction in ["gauche", "droite"] and 390 <= v.x <= 410):
                 if not v.signal_envoye:
                     v.signal_envoye = True
                     threading.Thread(target=envoyer_log, args=(self.ip, v)).start()
 
-            # Réapparition si sortie d'écran
-            if v.y < -100 or v.x > 900:
-                if v.direction == "haut":
-                    v.y = 800
-                elif v.direction == "droite":
-                    v.x = -80
-                v.signal_envoye = False
+            if v.y < -100:
+                v.y, v.signal_envoye = 800, False
+            elif v.y > 900:
+                v.y, v.signal_envoye = -80, False
+            elif v.x > 900:
+                v.x, v.signal_envoye = -80, False
+            elif v.x < -100:
+                v.x, v.signal_envoye = 800, False
 
         self.zone_dessin.update()
 

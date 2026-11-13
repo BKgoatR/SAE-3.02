@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPainter, QColor, QPen, QBrush
 from PyQt5.QtCore import Qt
-from modeles.vehicules import Vehicule
+from modeles.vehicule import Vehicule
 from modeles.feu import Feu
 
 class ZoneDessin(QWidget):
@@ -10,6 +10,8 @@ class ZoneDessin(QWidget):
         self.liste_vehicules = [
             Vehicule(430, 700, "haut", prioritaire=False),
             Vehicule(0, 430, "droite", prioritaire=True),
+            Vehicule(330, -80, "bas", prioritaire=False),
+            Vehicule(800, 330, "gauche", prioritaire=False)
         ]
 
         self.liste_feux = [
@@ -61,12 +63,12 @@ class ZoneDessin(QWidget):
             painter.setPen(Qt.NoPen)
 
             longueur = 80
-            largeur = 40
+            larg_vehicule = 40
 
             if v.direction in ["haut", "bas"]:
-                painter.drawRect(v.x, v.y, largeur, longueur)
+                painter.drawRect(v.x, v.y, larg_vehicule, longueur)
             else :
-                painter.drawRect(v.x, v.y, longueur, largeur)
+                painter.drawRect(v.x, v.y, longueur, larg_vehicule)
 
 
         for feu in self.liste_feux:
@@ -78,4 +80,3 @@ class ZoneDessin(QWidget):
 
             painter.setPen(Qt.black)
             painter.drawEllipse(feu.x, feu.y, 20, 20)
-
