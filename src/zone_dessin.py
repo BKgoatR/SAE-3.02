@@ -10,6 +10,7 @@ class ZoneDessin(QWidget):
         self.liste_vehicules = [
             Vehicule(430, 700, "haut", prioritaire=False),
             Vehicule(0, 430, "droite", prioritaire=True),
+            # --- AJOUT DES 2 VEHICULES MANQUANTS ---
             Vehicule(330, -80, "bas", prioritaire=False),
             Vehicule(800, 330, "gauche", prioritaire=False)
         ]
@@ -77,6 +78,9 @@ class ZoneDessin(QWidget):
                 painter.setBrush(QBrush(QColor(255, 0, 0)))
             elif feu.etat == "vert":
                 painter.setBrush(QBrush(QColor(0, 255, 0)))
+            # --- AJOUT DU FEU ORANGE ---
+            elif feu.etat == "orange":
+                painter.setBrush(QBrush(QColor(255, 165, 0)))
 
             painter.setPen(Qt.black)
             painter.drawEllipse(feu.x, feu.y, 20, 20)
