@@ -1,5 +1,8 @@
+A FAIRE EN PREMIER
+
+Commandes à suivre pour l installation du projet :
+
 (A FAIRE EN PREMIER UNE FOIS QUE LE DOSSIER DU PROJET EST EXTRAIT DANS LES TELECHARGEMENTS)
-su
-toto
+
 cd Downloads/SAE-3.02-main/src/
-python3 serveur.py
+sudo python3 serveur.py
