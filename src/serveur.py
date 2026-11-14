@@ -17,8 +17,10 @@ def gerer_client(connexion):
         data = connexion.recv(1024).decode('utf-8')
         if data:
             infos = json.loads(data)
+            message = f"Passage: {infos['type']} vers {infos['direction']}"
+            print(message)
             with open("logs.txt", "a") as f:
-                f.write(f"Passage: {infos['type']} vers {infos['direction']}\n")
+                f.write(message + "\n")
     except:
         pass
     finally:
