@@ -1,4 +1,5 @@
-#!/bin/bash
+Commandes à suivre pour l installation du projet :
+#(A AFIRE UNIQUEMENT QUAND LE DOSSIER EST EXTRAIT DANS LES TELECHARGEMENTS)
 su
 toto
 apt update
