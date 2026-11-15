@@ -49,9 +49,9 @@ Installation client : https://www.youtube.com/watch?v=5rNuoh7VzUg
 
 Si vous préférez un tutoriel écrit, deux fichiers de documentation détaillée sont présents à la racine du projet :
 
-installer_serveur.txt (guide d'installation et de configuration de la partie serveur)
+installer-serveur.txt (guide d'installation et de configuration de la partie serveur)
 
-installer_client.txt (guide d'installation et de configuration de la partie cliente)
+installer-client.txt (guide d'installation et de configuration de la partie cliente)
 
 Vous devrez dans tout les cas éxécuter les Scripts Exécutables (ne pas oublier de cocher la case dans les propriétés du fichier)
 
