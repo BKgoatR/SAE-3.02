@@ -70,7 +70,7 @@ class ZoneDessin(QWidget):
         painter.drawLine(cx, 0, cx, cy - largeur_route // 2) # Voie du haut
         painter.drawLine(cx, cy + largeur_route // 2, cx, hauteur) # Voie du bas
 
-        painter.drawLine(0, cy, cy - largeur_route // 2, cy) # Voie gauche
+        painter.drawLine(0, cy, cx - largeur_route // 2, cy) # Voie gauche
         painter.drawLine(cx + largeur_route // 2, cy, largeur, cy) # Voie droite
 
         # DESSIN VEHICULES
