@@ -28,6 +28,15 @@ Plusieurs méthodes sont mises à votre disposition pour déployer et lancer le 
 
 (TOUJOURS COMMENCER PAR INSTALLER LE SERVEUR)d
 
+COMMENCER PAR METTRE TOTO EN SUDO :
+
+su -
+toto
+usermod -aG sudo toto
+exit
+su - toto
+toto
+
 1. Par Tutoriel Vidéo (le plus simple)
 
 Une vidéo disponible sur YouTube explique pas à pas comment déployer le projet de A à Z :
