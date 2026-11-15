@@ -2,7 +2,7 @@ A FAIRE EN PREMIER
 
 (UNIQUEMENT SI LE SCRIPT D'INSTALLATION NE FONCTIONNE PAS)
 
-Commandes à suivre pour l installation du projet :
+Commandes à suivre pour l'installation du projet :
 
 (A FAIRE UNE FOIS QUE LE DOSSIER DU PROJET EST EXTRAIT DANS LES TELECHARGEMENTS)
 
